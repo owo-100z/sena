@@ -31,4 +31,4 @@ Thumbs.db
 **/.next/
 **/.turbo/
 #**/swagger/
-#**/db_data/
+**/db_data/
