@@ -1,0 +1,43 @@
+services:
+  db:
+    image: mariadb:11.8
+    container_name: sena_db
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./db/db_data:/var/lib/mysql
+      - ./db:/docker-entrypoint-initdb.d
+
+  api:
+    build: ./back
+    container_name: sena_back
+    restart: always
+    env_file: .env
+    expose:
+      - "3000"
+    depends_on:
+      - db
+
+  web:
+    build: ./front
+    container_name: sena_front
+    restart: always
+    env_file: .env
+    depends_on:
+      - api
+  
+  nginx:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    ports:
+      - "3031:80"
+    depends_on:
+      - api
+
+volumes:
+  db_data:
