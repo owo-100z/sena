@@ -1,18 +1,53 @@
 const pool = require('../db/db');
+const { log } = require('../utils/utils');
 
 class UserRepository {
-  /*
-  async saveStation(station) {
+  async getUserList() {
     const conn = await pool.getConnection();
-    const query = `INSERT INTO subway_stations (bldn_id, bldn_nm, route, lat, lot)
-                   VALUES (?, ?, ?, ?, ?)
+    const query = `SELECT u.username,
+                          DAYNAME(s.std_date) AS day_of_the_week,
+                          s.std_date,
+                          CASE WHEN COALESCE(s.score, 0) = 0 THEN '미참여'
+                               ELSE s.score
+                          END AS score,
+                          u.remarks
+                     FROM users u
+                     JOIN user_siege s
+                       ON u.username = s.username
+                    WHERE s.std_date BETWEEN 
+                          DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)  -- 이번 주 월요일
+                      AND DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY)  -- 이번 주 일요일
+                    ORDER BY s.std_date DESC, u.username ASC;
+                  `;
+    const rows = await conn.query(query);
+    conn.release();
+    return rows;
+  }
+
+  async saveUser(user) {
+    const conn = await pool.getConnection();
+    const query = `INSERT INTO users (username, remarks)
+                   VALUES (?, ?)
                    ON DUPLICATE KEY UPDATE
-                   bldn_id = VALUES(bldn_id),
-                   bldn_nm = VALUES(bldn_nm)`;
-    await conn.query(query, [station.BLDN_ID, station.BLDN_NM, station.ROUTE, station.LAT, station.LOT]);
+                      remarks = IF(VALUES(remarks) IS NOT NULL, VALUES(remarks), remarks),
+                      updated_at = CURRENT_TIMESTAMP;
+                  `;
+    await conn.query(query, [user.username, user.remarks]);
     conn.release();
   }
-  */
+
+  async saveUserScore(user) {
+    const conn = await pool.getConnection();
+    const query = `INSERT INTO user_siege (username, std_date, score, remarks)
+                   VALUES (?, ?, ?, ?)
+                   ON DUPLICATE KEY UPDATE
+                      score       = IF(VALUES(score) IS NOT NULL, VALUES(score), score),
+                      remarks     = IF(VALUES(remarks) IS NOT NULL, VALUES(remarks), remarks),
+                      updated_at  = CURRENT_TIMESTAMP;
+                  `;
+    await conn.query(query, [user.username, user.std_date, user.score, user.remarks]);
+    conn.release();
+  }
 }
 
 module.exports = new UserRepository();

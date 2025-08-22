@@ -7,7 +7,7 @@ const { log, utils } = require('./utils/utils')
 
 const pool = require("./db/db");
 
-const user = require('./controllers/user.controller');
+const users = require('./controllers/user.controller');
 
 const PORT = process.env.API_PORT || 3000;
 
@@ -34,7 +34,7 @@ app.use(async (req, res, next) => {
 app.use("/swagger-ui", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // USER API 라우터
-app.use("/user", user);
+app.use("/users", users);
 
 // DB 연결상태 확인
 app.get("/health", async (req, res) => {

@@ -1,4 +1,5 @@
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+// const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const apiBaseUrl = '/api';
 
 export const comm = {
   log: (...args) => {
@@ -32,10 +33,7 @@ export const comm = {
 
       const data = await res.json(); // fetch 성공 시 데이터
 
-      return {
-        status: res.ok ? 'success' : 'fail', // HTTP 상태 기준
-        data,
-      };
+      return data;
     } catch (e) {
       comm.log(`API Error: ${e}`);
       return { status: 'error', error: e.message };
@@ -44,9 +42,6 @@ export const comm = {
 }
 
 export const utils = {
-  formatDate: (date) => {
-    return date.toISOString().split('T')[0]; // YYYY-MM-DD format
-  },
   isEmpty: (obj) => {
     if (obj === null || obj === undefined) return true;
     if (typeof obj === "object") {
