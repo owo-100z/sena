@@ -10,7 +10,7 @@ class UserRepository {
                         DAYNAME(s.std_date) AS day_of_the_week,
                         s.std_date,
                         CASE WHEN COALESCE(s.score, 0) = 0 THEN '미참여'
-                             ELSE s.score||'점'
+                             ELSE CONCAT(FORMAT(s.score, 0), '점')
                         END AS score,
                         s.remarks
                      FROM users u
