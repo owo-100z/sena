@@ -253,7 +253,7 @@ export default function SiegeScreen() {
             </div>
             <div className="text-right">
               <p className="font-bold text-blue-600">
-                {user.score.toLocaleString()}점
+                {user.score}
               </p>
               <p className="text-gray-500 text-sm">{user.remarks || "-"}</p>
 
