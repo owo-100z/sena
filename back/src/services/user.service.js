@@ -42,6 +42,20 @@ class UserService {
             throw new Error('Failed to save user siege score');
         }
     }
+
+    // 공성전 점수 삭제
+    async deleteUserSiege(id) {
+        if (!id) {
+            throw new Error('ID is required for deletion');
+        }
+        try {
+            await UserRepository.deleteUserScore(id);
+            return { status: 'success', message: 'User siege score deleted successfully' };
+        } catch (error) {
+            log(`Error in deleteUserSiege: ${error.message}`);
+            throw new Error('Failed to delete user siege score');
+        }
+    }
 }
 
 module.exports = new UserService();

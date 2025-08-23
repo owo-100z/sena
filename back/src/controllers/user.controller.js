@@ -80,4 +80,29 @@ router.post('/siege', async (req, res) => {
     }
 });
 
+// 공성전 점수 삭제
+router.delete('/siege/:id', async (req, res) => {
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).json({
+            status: 'fail',
+            message: 'ID is required for deletion',
+        });
+    }
+    try {
+        await userService.deleteUserSiege(id);
+        res.status(200).json({
+            status: 'success',
+            message: 'User siege score deleted successfully',
+        });
+    } catch (error) {
+        log(`Error deleting user siege score: ${error.message}`);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to delete user siege score',
+            error: error.message,
+        });
+    }
+});
+
 module.exports = router;

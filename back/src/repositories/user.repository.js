@@ -2,15 +2,17 @@ const pool = require('../db/db');
 const { log } = require('../utils/utils');
 
 class UserRepository {
+  // 유저정보 조회
   async getUserList(searchOptions) {
     const conn = await pool.getConnection();
-    let query = `SELECT u.username,
-                          DAYNAME(s.std_date) AS day_of_the_week,
-                          s.std_date,
-                          CASE WHEN COALESCE(s.score, 0) = 0 THEN '미참여'
-                               ELSE s.score
-                          END AS score,
-                          s.remarks
+    let query = `SELECT s.id,
+                        u.username,
+                        DAYNAME(s.std_date) AS day_of_the_week,
+                        s.std_date,
+                        CASE WHEN COALESCE(s.score, 0) = 0 THEN '미참여'
+                             ELSE s.score
+                        END AS score,
+                        s.remarks
                      FROM users u
                      JOIN user_siege s
                        ON u.username = s.username
@@ -30,13 +32,12 @@ class UserRepository {
     }
     query + `ORDER BY s.std_date DESC, u.username ASC;`;
 
-    log(`\n>>>>>>\nExecuting query: ${query}\n>>>>>>\n`);
-
     const rows = await conn.query(query);
     conn.release();
     return rows;
   }
 
+  // 유저정보 저장
   async saveUser(user) {
     const conn = await pool.getConnection();
     const query = `INSERT INTO users (username, remarks)
@@ -49,6 +50,7 @@ class UserRepository {
     conn.release();
   }
 
+  // 공성전 점수 저장
   async saveUserScore(user) {
     const conn = await pool.getConnection();
     const query = `INSERT INTO user_siege (username, std_date, score, remarks)
@@ -59,6 +61,14 @@ class UserRepository {
                       updated_at  = CURRENT_TIMESTAMP;
                   `;
     await conn.query(query, [user.username, user.std_date, user.score, user.remarks]);
+    conn.release();
+  }
+
+  // 공성전 점수 삭제
+  async deleteUserScore(id) {
+    const conn = await pool.getConnection();
+    const query = `DELETE FROM user_siege WHERE id = ?;`;
+    await conn.query(query, [id]);
     conn.release();
   }
 }

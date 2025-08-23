@@ -36,8 +36,6 @@ export default function SiegeScreen() {
 
       const res = await comm.api("/users", { method: 'GET', params });
 
-      comm.log("Fetched users:", res);
-
       if (res.status === "success") {
         setUserList(res.data);
       }
@@ -65,11 +63,27 @@ export default function SiegeScreen() {
       };
       const res = await comm.api("/users/siege", { method: "POST", body });
       if (res.status === "success") {
+        alert("저장되었습니다.");
         fetchUsers(); // 저장 후 목록 갱신
         setUsername("");
         setStdDate(today);
         setScore(null);
         setCustomScore("");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (username, std_date, id) => {
+    if (!window.confirm(`정말로 ${username}님의 ${std_date} 점수를 삭제하시겠습니까?`)) {
+      return;
+    }
+    try {
+      const res = await comm.api("/users/siege/" + id, { method: "DELETE" });
+      if (res.status === "success") {
+        alert("삭제되었습니다.");
+        fetchUsers(); // 삭제 후 목록 갱신
       }
     } catch (err) {
       console.error(err);
@@ -227,14 +241,29 @@ export default function SiegeScreen() {
       {/* 유저 목록 */}
       <div className="space-y-4">
         {userList.map((user, idx) => (
-          <div key={idx} className="bg-white shadow rounded-xl p-4 flex justify-between items-center">
+          <div
+            key={idx}
+            className="bg-white shadow rounded-xl p-4 flex justify-between items-center"
+          >
             <div>
               <p className="font-semibold text-gray-800">{user.username}</p>
-              <p className="text-gray-500 text-sm">{user.std_date} ( {user.day_of_the_week} )</p>
+              <p className="text-gray-500 text-sm">
+                {user.std_date} ( {user.day_of_the_week} )
+              </p>
             </div>
             <div className="text-right">
-              <p className="font-bold text-blue-600">{user.score.toLocaleString()}점</p>
+              <p className="font-bold text-blue-600">
+                {user.score.toLocaleString()}점
+              </p>
               <p className="text-gray-500 text-sm">{user.remarks || "-"}</p>
+
+              {/* 삭제 버튼 */}
+              <button
+                onClick={() => handleDelete(user.username, user.std_date, user.id)}
+                className="mt-2 px-3 py-1 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition"
+              >
+                삭제
+              </button>
             </div>
           </div>
         ))}
