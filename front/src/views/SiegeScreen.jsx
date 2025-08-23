@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from "react";
+import { utils } from "../assets/common/common";
 
-const today = new Date().toISOString().slice(0, 10);
+const today = utils.getToday();
 
 export default function SiegeScreen() {
   const [accordionOpen, setAccordionOpen] = useState(true);
+  const [searchOptions, setSearchOptions] = useState(false);
   const [username, setUsername] = useState("");
   const [stdDate, setStdDate] = useState(today);
   const [score, setScore] = useState(null);
   const [customScore, setCustomScore] = useState("");
   const [remarks, setRemarks] = useState("");
   const [userList, setUserList] = useState([]);
+
+  const [searchOptionsValues, setSearchOptionsValues] = useState({
+    username: "",
+    fr_dt: utils.getDateDaysAgo(7),
+    to_dt: today,
+  });
 
   const options = [100000, 200000, 300000, "custom"];
 
@@ -20,7 +28,13 @@ export default function SiegeScreen() {
 
   const fetchUsers = async () => {
     try {
-      const res = await comm.api("/users");
+      const { username, fr_dt, to_dt } = searchOptionsValues;
+      const params = {};
+      if (username) params.username = username;
+      if (fr_dt) params.fr_dt = fr_dt;
+      if (to_dt) params.to_dt = to_dt;
+
+      const res = await comm.api("/users", { method: 'GET', params });
 
       comm.log("Fetched users:", res);
 
@@ -47,9 +61,10 @@ export default function SiegeScreen() {
         username,
         std_date: stdDate,
         score: score === "custom" ? Number(customScore) : score,
+        remarks,
       };
       const res = await comm.api("/users/siege", { method: "POST", body });
-      if (res.status === "ok") {
+      if (res.status === "success") {
         fetchUsers(); // 저장 후 목록 갱신
         setUsername("");
         setStdDate(today);
@@ -135,13 +150,87 @@ export default function SiegeScreen() {
         )}
       </div>
 
+      {/* 검색조건 */}
+      <div className="bg-white shadow-lg rounded-xl overflow-hidden mb-6">
+        <button
+          onClick={() => setSearchOptions(!searchOptions)}
+          className="w-full text-left px-6 py-4 flex justify-between items-center font-bold text-gray-800 hover:bg-gray-100 transition"
+        >
+          <span>검색 조건</span>
+          <span
+            className={`transform transition-transform ${
+              searchOptions ? "rotate-180" : "rotate-0"
+            }`}
+          >
+            ▼
+          </span>
+        </button>
+
+        {searchOptions && (
+          <div className="p-6 space-y-4">
+            {/* 유저명 */}
+            <div className="flex items-center space-x-4">
+              <label className="text-gray-700 font-medium w-20">유저명</label>
+              <input
+                type="text"
+                placeholder="유저명"
+                value={searchOptionsValues.username}
+                onChange={(e) =>
+                  setSearchOptionsValues({
+                    ...searchOptionsValues,
+                    username: e.target.value,
+                  })
+                }
+                className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* 조회일자 */}
+            <div className="flex items-center space-x-2">
+              <label className="text-gray-700 font-medium w-20">조회 일자</label>
+              <input
+                type="date"
+                value={searchOptionsValues.fr_dt}
+                onChange={(e) =>
+                  setSearchOptionsValues({
+                    ...searchOptionsValues,
+                    fr_dt: e.target.value,
+                  })
+                }
+                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <span className="mx-2">~</span>
+              <input
+                type="date"
+                value={searchOptionsValues.to_dt}
+                onChange={(e) =>
+                  setSearchOptionsValues({
+                    ...searchOptionsValues,
+                    to_dt: e.target.value,
+                  })
+                }
+                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* 조회 버튼 */}
+            <button
+              onClick={fetchUsers}
+              className="w-full mt-2 px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+            >
+              조회
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* 유저 목록 */}
       <div className="space-y-4">
         {userList.map((user, idx) => (
           <div key={idx} className="bg-white shadow rounded-xl p-4 flex justify-between items-center">
             <div>
               <p className="font-semibold text-gray-800">{user.username}</p>
-              <p className="text-gray-500 text-sm">{user.std_date}</p>
+              <p className="text-gray-500 text-sm">{user.std_date} ( {user.day_of_the_week} )</p>
             </div>
             <div className="text-right">
               <p className="font-bold text-blue-600">{user.score.toLocaleString()}점</p>

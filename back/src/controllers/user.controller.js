@@ -6,7 +6,13 @@ const { log, utils } = require('../utils/utils');
 // 사용자 목록 조회
 router.get('/', async (req, res) => {
     try {
-        const users = await userService.getUserList();
+        const { username, fr_dt, to_dt } = req.query;
+        const searchOptions = {};
+        if (username) searchOptions.username = username;
+        if (fr_dt) searchOptions.fr_dt = fr_dt;
+        if (to_dt) searchOptions.to_dt = to_dt;
+
+        const users = await userService.getUserList(searchOptions);
 
         log(`Fetched user list: ${JSON.stringify(users)}`);
         
@@ -51,7 +57,7 @@ router.post('/', async (req, res) => {
 
 // 공성전 점수 저장
 router.post('/siege', async (req, res) => {
-    const { username, std_date, score } = req.body;
+    const { username, std_date, score, remarks } = req.body;
     if (!username || !std_date || score === undefined) {
         return res.status(400).json({
             status: 'fail',
@@ -59,7 +65,7 @@ router.post('/siege', async (req, res) => {
         });
     }
     try {
-        await userService.saveUserSiege({ username, std_date, score });
+        await userService.saveUserSiege({ username, std_date, score, remarks });
         res.status(201).json({
             status: 'success',
             message: 'User score saved successfully',

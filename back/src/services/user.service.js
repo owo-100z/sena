@@ -4,9 +4,9 @@ const { log } = require('../utils/utils');
 
 class UserService {
     // 사용자 목록 조회
-    async getUserList() {
+    async getUserList(searchOptions) {
         try {
-            const users = await UserRepository.getUserList();
+            const users = await UserRepository.getUserList(searchOptions);
             return users;
         } catch (error) {
             log(`Error in getUserList: ${error.message}`);

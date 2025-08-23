@@ -2,23 +2,36 @@ const pool = require('../db/db');
 const { log } = require('../utils/utils');
 
 class UserRepository {
-  async getUserList() {
+  async getUserList(searchOptions) {
     const conn = await pool.getConnection();
-    const query = `SELECT u.username,
+    let query = `SELECT u.username,
                           DAYNAME(s.std_date) AS day_of_the_week,
                           s.std_date,
                           CASE WHEN COALESCE(s.score, 0) = 0 THEN '미참여'
                                ELSE s.score
                           END AS score,
-                          u.remarks
+                          s.remarks
                      FROM users u
                      JOIN user_siege s
                        ON u.username = s.username
-                    WHERE s.std_date BETWEEN 
-                          DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)  -- 이번 주 월요일
-                      AND DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY)  -- 이번 주 일요일
-                    ORDER BY s.std_date DESC, u.username ASC;
-                  `;
+                    WHERE 1=1`;
+    if (searchOptions.username) {
+      query += ` AND u.username = '${searchOptions.username}'`;  
+    }
+
+    if (searchOptions.fr_dt && searchOptions.to_dt) {
+      query += ` AND s.std_date BETWEEN '${searchOptions.fr_dt}' AND '${searchOptions.to_dt}'`;
+    } else {
+      query += `
+        AND s.std_date BETWEEN 
+            DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)  -- 이번 주 월요일
+        AND DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY)  -- 이번 주 일요일
+      `;
+    }
+    query + `ORDER BY s.std_date DESC, u.username ASC;`;
+
+    log(`\n>>>>>>\nExecuting query: ${query}\n>>>>>>\n`);
+
     const rows = await conn.query(query);
     conn.release();
     return rows;

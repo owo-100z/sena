@@ -1,7 +1,5 @@
 use mydb;
 
-SET lc_time_names = 'ko_KR';
-
 /* 사용자정보 */
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
