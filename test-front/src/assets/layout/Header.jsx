@@ -5,13 +5,29 @@ import { SlArrowDown, SlMenu } from "react-icons/sl";
 export default function Header() {
     const themes = ['cupcake', 'dim', 'caramellatte', 'retro', 'pastel'];
     const menuList = [
-        { title: '홈', path: '/' },
-        { title: '설정', path: '/setting' }
-    ];
+        {title: '홈', menus: [
+            { title: '공성전기록', path: '/' },
+            { title: '길드원스펙', path: '/specs' },
+        ]},
+        {title: '길드', menus: [
+            { title: '길드원', path: '/users' },
+            { title: '길드스펙', path: '/guild-spec' },
+            { title: '공성전', path: '/siege-record' },
+            { title: '길드전', path: '/guild-war' },
+        ]},
+        {title: '설정', menus: [
+            { title: '코드설정', path: '/code' },
+            { title: '영웅설정', path: '/hero' },
+        ]},
+    ]
 
     const location = useLocation();
-    const currentMenu = menuList.find(menu => menu.path === location.pathname);
+    const currentMenu = menuList.flatMap(menu => menu.menus).find(menu => menu.path === location.pathname);
     const title = currentMenu ? currentMenu.title : '존재하지 않는 페이지';
+
+    if (currentMenu) {
+        menuList.find(menu => menu.menus.includes(currentMenu)).active = true;
+    }
     
     return (
       /* 상단바 */
@@ -51,7 +67,18 @@ export default function Header() {
                   <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>
                   <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
                     {menuList.map((menu, idx) => (
-                        <li key={idx}><Link to={menu.path}>{menu.title}</Link></li>
+                        <li key={idx}>
+                            <details open={menu.active}>
+                                <summary>{menu.title}</summary>
+                                <ul>
+                                    {menu.menus.map((subMenu, sIdx) => (
+                                        <li key={sIdx} onClick={() => {document.getElementById('my-drawer-4').checked = false;}}>
+                                            <Link to={subMenu.path}>{subMenu.title}</Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </details>
+                        </li>
                     ))}
                   </ul>
               </div>
