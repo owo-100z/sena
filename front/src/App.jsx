@@ -1,23 +1,44 @@
 import React, { useState } from "react";
 import SiegeScreen from "./views/SiegeScreen";
-import { HiMenu } from "react-icons/hi";
+import { HiMenu, HiOutlineSun, HiMoon } from "react-icons/hi";
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [currentScreen, setCurrentScreen] = useState("siege");
+  const [darkMode, setDarkMode] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col">
       {/* 상단바 */}
       <nav className="bg-white shadow-md py-4 px-6 flex justify-between items-center">
+        {/* 타이틀 */}
         <h1 className="text-xl font-bold text-blue-600">공성전</h1>
-        {/* 햄버거 버튼 오른쪽 */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="text-gray-700 hover:text-gray-900 focus:outline-none"
-        >
-          <HiMenu size={28} />
-        </button>
+
+        <div className="inline-flex gap-6">
+          {/* dark mode */}
+          { darkMode && 
+          <button
+            onClick={() => setDarkMode(false)}
+            className="text-gray-700 hover:text-gray-900 focus:outline-none"
+          >
+            <HiMoon size={28} />
+          </button> }
+          { !darkMode && 
+          <button
+            onClick={() => setDarkMode(true)}
+            className="text-gray-700 hover:text-gray-900 focus:outline-none"
+          >
+            <HiOutlineSun size={28} />
+          </button> }
+
+          {/* 메뉴버튼 */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="text-gray-700 hover:text-gray-900 focus:outline-none"
+          >
+            <HiMenu size={28} />
+          </button>
+        </div>
       </nav>
 
       {/* 슬라이드 메뉴 (오른쪽에서 등장) */}
