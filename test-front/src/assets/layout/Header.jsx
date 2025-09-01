@@ -13,7 +13,7 @@ export default function Header() {
             { title: '길드원', path: '/users' },
             { title: '길드스펙', path: '/guild-spec' },
             { title: '공성전', path: '/siege-record' },
-            { title: '길드전', path: '/guild-war' },
+            // { title: '길드전', path: '/guild-war' },
         ]},
         {title: '설정', menus: [
             { title: '코드설정', path: '/code' },
@@ -59,12 +59,12 @@ export default function Header() {
           <div className="drawer-content">
               {/* 메뉴 */}
               <div className="drawer drawer-end">
-                  <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
-                  <label htmlFor="my-drawer-4" className="drawer-button btn btn-square btn-ghost">
+                  <input id="menu-drawer" type="checkbox" className="drawer-toggle" />
+                  <label htmlFor="menu-drawer" className="drawer-button btn btn-square btn-ghost">
                   <SlMenu />
               </label>
               <div className="drawer-side">
-                  <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>
+                  <label htmlFor="menu-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
                   <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
                     {menuList.map((menu, idx) => (
                         <li key={idx}>
@@ -72,7 +72,7 @@ export default function Header() {
                                 <summary>{menu.title}</summary>
                                 <ul>
                                     {menu.menus.map((subMenu, sIdx) => (
-                                        <li key={sIdx} onClick={() => {document.getElementById('my-drawer-4').checked = false;}}>
+                                        <li key={sIdx} onClick={() => {document.getElementById('menu-drawer').checked = false;}}>
                                             <Link to={subMenu.path}>{subMenu.title}</Link>
                                         </li>
                                     ))}

@@ -1,0 +1,145 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "REST API",
+    "description": "Backend API 문서"
+  },
+  "servers": [
+    {
+      "description":"DEV",
+      "url": "http://localhost:5051/"
+    },
+    {
+      "description": "PROD",
+      "url": "http://localhost:3000/"
+    }
+  ],
+  "tags": [
+    {
+      "name": "DB",
+      "description": "DB 관련 API"
+    },
+    {
+      "name": "User",
+      "description": "유저 관련 API"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["DB"],
+        "summary": "DB 연결 상태 확인",
+        "description": "DB 연결 상태 확인",
+        "responses": {
+          "200": { "$ref": "#/components/schemas/SuccessSchema" },
+          "500": { "$ref": "#/components/schemas/ErrorSchema" }
+        }
+      }
+    },
+    "/user/user": {
+      "get": {
+        "tags": ["User"],
+        "summary": "유저 정보 조회",
+        "description": "유저 정보 조회",
+        "parameters": [
+          { "$ref": "#/components/parameters/startIndex" },
+          { "$ref": "#/components/parameters/endIndex" },
+          {
+            "name": "subwayName",
+            "description": "지하철 노선 이름 (default: 1호선)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/schemas/SuccessSchema" },
+          "500": { "$ref": "#/components/schemas/ErrorSchema" }
+        }
+      },
+      "post": {
+        "tags": ["User"],
+        "summary": "유저 정보 조회",
+        "description": "유저 정보 조회",
+        "parameters": [
+          { "$ref": "#/components/parameters/startIndex" },
+          { "$ref": "#/components/parameters/endIndex" },
+          {
+            "name": "subwayName",
+            "description": "지하철 노선 이름 (default: 1호선)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/schemas/SuccessSchema" },
+          "500": { "$ref": "#/components/schemas/ErrorSchema" }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "startIndex": {
+        "name": "startIndex",
+        "description": "시작 인덱스 (0부터 시작)",
+        "in": "query",
+        "schema": {
+          "type": "number"
+        }
+      },
+      "endIndex": {
+        "name": "endIndex",
+        "description": "종료 인덱스 (최대 startIndex + 1000)",
+        "in": "query",
+        "schema": {
+          "type": "number"
+        }
+      }
+    },
+    "responses": {
+      "SuccessResponse": {
+        "description": "성공 응답",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SuccessSchema"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "서버 내부 오류",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorSchema"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "SuccessSchema": {
+        "type": "object",
+        "description": "OK",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "data": { "type": "array", "items": { "type": "object" } }
+        }
+      },
+      "ErrorSchema": {
+        "type": "object",
+        "description": "Internal Server Error",
+        "properties": {
+          "status": { "type": "string", "example": "error" },
+          "message": { "type": "string", "example": "서버 오류가 발생했습니다." }
+        }
+      }
+    }
+  }
+}

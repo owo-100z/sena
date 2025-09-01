@@ -14,7 +14,7 @@ services:
       - ./db/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf
 
   api:
-    build: ./back
+    build: ./test-back
     container_name: sena_back
     restart: always
     env_file: .env
@@ -24,7 +24,7 @@ services:
       - db
 
   web:
-    build: ./front
+    build: ./test-front
     container_name: sena_front
     restart: always
     env_file: .env
@@ -33,7 +33,7 @@ services:
   
   nginx:
     build:
-      context: ./front
+      context: ./test-front
       dockerfile: Dockerfile
     ports:
       - "3031:80"

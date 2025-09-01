@@ -72,12 +72,7 @@ export default function Home() {
                     </div>
                 </div>
                 <div className="card bg-base-100 rounded-box grid p-3 place-items-center">
-                    {!loaded && (
-                        <div className="flex w-52 flex-col gap-4">
-                            <div className="skeleton h-32 w-full"></div>
-                        </div>
-                    )}
-                    {loaded && (
+                    {loaded ? (
                         <div className="card bg-base-100 text-base-content">
                             <div className="card-body items-center text-center">
                                 <h2 className="card-title">Cookies!</h2>
@@ -86,6 +81,10 @@ export default function Home() {
                                 <button className="btn btn-info/50">Deny</button>
                                 </div>
                             </div>
+                        </div>
+                    ) : (
+                        <div className="flex w-52 flex-col gap-4">
+                            <div className="skeleton h-32 w-full"></div>
                         </div>
                     )}
                 </div>
