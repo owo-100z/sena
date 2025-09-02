@@ -4,7 +4,7 @@ use mydb;
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    level INT,
+    lv INT,
     remarks TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS codes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     code_grp VARCHAR(4) NOT NULL UNIQUE,
     code VARCHAR(4),
-    description TEXT,
+    code_desc TEXT,
     temproary_1 VARCHAR(100),
     temproary_2 VARCHAR(100),
     use_yn CHAR(1) DEFAULT 'Y',
@@ -48,12 +48,13 @@ CREATE TABLE IF NOT EXISTS user_specs (
 /* 공성전 */
 CREATE TABLE IF NOT EXISTS user_siege (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL UNIQUE,
-    std_date VARCHAR(8) NOT NULL UNIQUE,
+    user_id INT NOT NULL,
+    std_date VARCHAR(8) NOT NULL,
     score INT,
     remarks TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_user_date (user_id, std_date)
 );
 
 /* 길드전 */
@@ -67,10 +68,10 @@ CREATE TABLE IF NOT EXISTS user_guildwar (
 );
 
 /* 중요도 */
-CREATE TABLE IF NOT EXISTS priority (
+CREATE TABLE IF NOT EXISTS spec_priority (
     id INT AUTO_INCREMENT PRIMARY KEY,
     spec_type VARCHAR(4) NOT NULL UNIQUE,
-    priority NUMBER,
+    priority_val DECIMAL(10,2),
     use_yn CHAR(1) DEFAULT 'Y',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -79,9 +80,10 @@ CREATE TABLE IF NOT EXISTS priority (
 /* 유저 영웅 */
 CREATE TABLE IF NOT EXISTS user_heroes (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL UNIQUE,
-    hero_id INT NOT NULL UNIQUE,
+    user_id INT NOT NULL,
+    hero_id INT NOT NULL,
     hero_grade INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_user_hero (user_id, hero_id)
 );

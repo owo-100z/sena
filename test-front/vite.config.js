@@ -6,9 +6,17 @@ import path from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss(), AutoImport({
+  plugins: [AutoImport({
       dirs: ['src/assets/common'],
-    })],
+      imports: [
+        'react',
+        {dayjs: [['default', 'dayjs']]}
+      ],
+      dts: 'src/auto-imports.d.ts',
+    }),
+    react(), tailwindcss(),
+  ],
+
   resolve: {
     alias: {
       '@common': path.resolve(__dirname, 'src/assets/common/common.js'),

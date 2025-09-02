@@ -5,6 +5,7 @@ import { HiPlus } from "react-icons/hi";
 export default function Users() {
   const [mode, setMode] = useState("C");
   const [user, setUser] = useState({});
+  const [users, setUsers] = useState([]);
   const user_popup_id = "modal-01";
 
   useEffect(() => {
@@ -14,6 +15,9 @@ export default function Users() {
   const selectUsers = async () => {
     const res = await comm.api("/guild/users");
     console.log(res);
+    if (res?.status === 'success') {
+      setUsers(res.data);
+    }
   }
 
   const showPopup = (mode, user) => {
@@ -24,32 +28,31 @@ export default function Users() {
   return (
     <>
       <div className="flex-wrap justify-items-end text-end">
-        <button className="btn bg-base-200 border-base-300 btn-md btn-soft mb-4 hover:bg-base-300 transition-all duration-200 hover:-translate-y-1"
-                onClick={() => showPopup("C")}
-        >
-          <HiPlus />
-        </button>
+        <div className="flex items-center mb-4 gap-4">
+          <p>총원: {users.length}</p>
+          <button className="btn bg-base-200 border-base-300 btn-md btn-soft hover:bg-base-300 transition-all duration-200 hover:-translate-y-1"
+                  onClick={() => showPopup("C")}
+          >
+            <HiPlus />
+          </button>
+        </div>
         <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-auto border p-4">
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl hover:bg-base-300 transition-all duration-200 hover:-translate-y-1"
-                    onClick={() => showPopup("U", {username: 'test', level: '3', remarks: ''})}
-            >
-              Responsive
-            </button>
-            <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl hover:bg-base-300 transition-all duration-200 hover:-translate-y-1"
-                    onClick={() => showPopup("U", {username: 'test22', level: '99', remarks: ''})}
-            >
-              Responsive
-            </button>
-            <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl hover:bg-base-300 transition-all duration-200 hover:-translate-y-1">Responsive</button>
-            <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl hover:bg-base-300 transition-all duration-200 hover:-translate-y-1">Responsive</button>
-            <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl hover:bg-base-300 transition-all duration-200 hover:-translate-y-1">Responsive</button>
-            <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl hover:bg-base-300 transition-all duration-200 hover:-translate-y-1">Responsive</button>
-            <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl hover:bg-base-300 transition-all duration-200 hover:-translate-y-1">Responsive</button>
+          <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {users.map((v, i) => (
+              <div className="tooltip" data-tip={v.remarks}>
+                <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-md xl:btn-md hover:bg-base-300 transition-all duration-200 hover:-translate-y-1 w-full justify-between"
+                        onClick={() => showPopup("U", {...v})}
+                        key={i}
+                >
+                  {v.username}
+                  <div className="badge badge-sm">Lv {v.lv}</div>
+                </button>
+              </div>
+            ))}
           </div>
         </fieldset>
       </div>
-      <UsersPopup id={user_popup_id} mode={mode} user={user} />
+      <UsersPopup id={user_popup_id} mode={mode} user={user} onClose={selectUsers} />
     </>
   )
 }
