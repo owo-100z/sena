@@ -32,3 +32,4 @@ Thumbs.db
 **/.turbo/
 #**/swagger/
 **/db_data/
+**/db_data.tar
