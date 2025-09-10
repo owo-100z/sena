@@ -1,94 +1,108 @@
 import React, { useState, useEffect } from "react";
 
-function getNowDateTimeLocal() {
-  const now = new Date();
-  now.setSeconds(0, 0);
-  const pad = n => n.toString().padStart(2, '0');
-  const yyyy = now.getFullYear();
-  const mm = pad(now.getMonth() + 1);
-  const dd = pad(now.getDate());
-  const hh = pad(now.getHours());
-  const min = pad(now.getMinutes());
-  return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+const today = dayjs().format('YYYY-MM-DD');
+//const std_dt = dayjs().add(-1, 'day').format('YYYY-MM-DD');
+const curr_week = dayjs().locale('ko').format('ddd');
+
+const weeks = ['월', '화', '수', '목', '금', '토', '일'];
+
+const getWeek = (dt) => {
+  return dayjs(dt).format('ddd');
 }
 
-function addMinutesToDateTimeLocal(dtStr, minutes) {
-  const date = dtStr ? new Date(dtStr) : new Date();
-  date.setMinutes(date.getMinutes() + minutes);
-  date.setSeconds(0, 0);
-  const pad = n => n.toString().padStart(2, '0');
-  const yyyy = date.getFullYear();
-  const mm = pad(date.getMonth() + 1);
-  const dd = pad(date.getDate());
-  const hh = pad(date.getHours());
-  const min = pad(date.getMinutes());
-  return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+const getStdDt = (week) => {
+  const today_of_week = getWeek(today);
+  const index_of_today = weeks.findIndex(v => v === today_of_week);
+  const index_of_week = weeks.findIndex(v => v === week);
+
+  const diff = index_of_week - index_of_today;
+
+  const result = diff <= 0 ? dayjs(today).add(diff, 'day').format('YYYY-MM-DD') : dayjs(today).add(diff - 7, 'day').format('YYYY-MM-DD');
+
+  return result;
 }
 
 export default function Home() {
-    const [dateTime, setDateTime] = useState(getNowDateTimeLocal());
-    const [loaded, setLoaded] = useState(false);
+  const [selectedWeek, setSelectedWeek] = useState(curr_week);
+  const [stdDate, setStdDate] = useState(today);
 
-    useEffect(() => {
-        comm.log("ggg");
-        setTimeout(() => {
-            setLoaded(true);
-        }, 1000);
-    }, [])
+  const [summary, setSummary] = useState({});
 
-    const handleAddMinutes = (min) => {
-        setDateTime(dt => addMinutesToDateTimeLocal(dt, min));
-    };
+  useEffect(() => {
+    selectSiegeList(stdDate);
+  }, [stdDate]);
 
-    const tmpStop = (is) => {
-        if (is) comm.log("stop");
-        else comm.log("release");
+  const selectSiegeList = async (stdt) => {
+    const st_dt = stdt.replace(/[^0-9]/g, '');
+    const res = await comm.api('/guild/siege/summary', { method: 'GET', params: {stdDate: st_dt}});
+
+    if (res.status === "success") {
+      setSummary({
+        list: res?.data?.list,
+        dashboard: res?.data?.dashboard[0],
+      })
     }
+  }
 
-    return (
-        <>
-            <div className="flex w-full max-w-180 flex-col gap-1">
-                <div className="card bg-base-200 rounded-box grid p-3 place-items-center">
-                    <div className="filter flex justify-center gap-3">
-                        <input className="btn filter-reset" type="radio" name="metaframeworks" aria-label="All"/>
-                        <input className="btn" type="radio" name="metaframeworks" aria-label="배민"/>
-                        <input className="btn" type="radio" name="metaframeworks" aria-label="쿠팡"/>
-                        <input className="btn" type="radio" name="metaframeworks" aria-label="땡겨요"/>
-                    </div>
-                </div>
-                <div className="card bg-base-200 rounded-box grid p-3 place-items-center">
-                    <div className="card-body items-center text-center">
-                        <div className="join">
-                            <button className="btn btn-xs" onClick={() => {handleAddMinutes(30);}}>+30분</button>
-                            <button className="btn btn-xs" onClick={() => {handleAddMinutes(60);}}>+1시간</button>
-                            <button className="btn btn-xs" onClick={() => {handleAddMinutes(120);}}>+2시간</button>
-                            <button className="btn btn-xs" onClick={() => {setDateTime(getNowDateTimeLocal())}}>초기화</button>
-                        </div>
-                        <span>
-                            <input type="datetime-local" className="input w-55" value={dateTime} onChange={e => setDateTime(e.target.value)} />
-                            <button className="btn btn-md ml-1 bg-error/50" onClick={() => {tmpStop(true)}}>임시중지</button>
-                            <button className="btn btn-md ml-1 bg-info/50" onClick={() => {tmpStop(false)}}>임시중지해제</button>
-                        </span>
-                    </div>
-                </div>
-                <div className="card bg-base-100 rounded-box grid p-3 place-items-center">
-                    {loaded ? (
-                        <div className="card bg-base-100 text-base-content">
-                            <div className="card-body items-center text-center">
-                                <h2 className="card-title">Cookies!</h2>
-                                <div className="card-actions justify-end">
-                                <button className="btn btn-error/50">Accept</button>
-                                <button className="btn btn-info/50">Deny</button>
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="flex w-52 flex-col gap-4">
-                            <div className="skeleton h-32 w-full"></div>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </>
-    )
+  return (
+    <div className="flex w-full max-w-180 flex-col gap-1">
+      <div className="grid p-3 overflow-x-auto">
+        <ul className="steps z-0">
+          {weeks && weeks.map((v, i) => (
+            <li key={i} data-content={v} className={`step cursor-pointer ${v === selectedWeek ? 'step-secondary' : ''}`} onClick={() => {setSelectedWeek(v); setStdDate(getStdDt(v));}}></li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="stats shadow">
+        <div className="stat">
+          <div className="stat-title">최고점수</div>
+          <div className="stat-value">{ Number(summary.dashboard?.high_score || 0).toLocaleString() }</div>
+          <div className="stat-desc">최저: { Number(summary.dashboard?.row_score || 0).toLocaleString() }</div>
+        </div>
+
+        <div className="stat">
+          <div className="stat-title">참여</div>
+          <div className="stat-value">{ summary.dashboard?.played || 0 }</div>
+          <div className="stat-desc">미참여: { (summary.dashboard?.players || 0) - (summary.dashboard?.played || 0) }</div>
+        </div>
+
+        <div className="stat">
+          <div className="stat-title">총점</div>
+          <div className="stat-value">{ Number(summary.dashboard?.total_score || 0).toLocaleString() }</div>
+          <div className={`stat-desc ${(summary.dashboard?.diff_score || 0) >= 0 ? 'text-primary' : 'text-error'}`}>{ Number(summary.dashboard?.diff_score || 0).toLocaleString() }</div>
+        </div>
+      </div>
+
+      <strong className="text-primary">기준일: {stdDate}</strong>
+      <div className="overflow-x-auto max-h-120 md:max-h-80">
+        <table className="table table-xs table-pin-rows table-pin-cols z-0">
+          <thead>
+            <tr>
+              <th></th>
+              <td>유저명</td>
+              <td>레벨</td>
+              <td>지난주점수</td>
+              <td>이번주점수</td>
+              <td>점수상승</td>
+              <td>이번주미참여</td>
+            </tr>
+          </thead>
+          <tbody>
+            { summary.list && summary.list?.map((v, i) => (
+              <tr key={i}>
+                <th>{i+1}</th>
+                <td>{v?.username}</td>
+                <td>{v?.lv}</td>
+                <td>{Number(v?.pre_score || 0).toLocaleString()}</td>
+                <td>{Number(v?.cur_score || 0).toLocaleString()}</td>
+                <td className={(v?.diff_score || 0) < 0 ? 'text-error' : ''}>{Number(v?.diff_score || 0).toLocaleString()}</td>
+                <td className={(v?.no_play || 0) > 0 ? 'text-error' : ''}>{v?.no_play}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
 }

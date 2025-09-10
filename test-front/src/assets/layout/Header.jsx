@@ -7,18 +7,18 @@ export default function Header() {
     const menuList = [
         {title: '홈', menus: [
             { title: '공성전기록', path: '/' },
-            { title: '길드원스펙', path: '/specs' },
+            // { title: '길드원스펙', path: '/specs' },
         ]},
         {title: '길드', menus: [
             { title: '길드원', path: '/users' },
-            { title: '길드스펙', path: '/guild-spec' },
-            { title: '공성전', path: '/siege-record' },
+            // { title: '길드스펙', path: '/guild-spec' },
+            { title: '점수입력', path: '/siege-record' },
             // { title: '길드전', path: '/guild-war' },
         ]},
-        {title: '설정', menus: [
-            { title: '코드설정', path: '/code' },
-            { title: '영웅설정', path: '/hero' },
-        ]},
+        // {title: '설정', menus: [
+        //     { title: '코드설정', path: '/code' },
+        //     { title: '영웅설정', path: '/hero' },
+        // ]},
     ]
 
     const location = useLocation();

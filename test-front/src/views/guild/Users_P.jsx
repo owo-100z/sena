@@ -23,6 +23,19 @@ export default function UsersPopup({ id, mode, user, onClose }) {
     }
   }
 
+  const del = async () => {
+    if (!confirm('삭제하시겠습니까??')) return;
+
+    const res = await comm.api(`/guild/users/${user.id}`, { method: 'DELETE' });
+
+    if (res.status === 'success') {
+      document.getElementById(`${id}-close`).click();
+      if (onClose) onClose();
+    } else {
+      alert(`오류가 발생했습니다. ${res.message}`);
+    }
+  }
+
   return (
     <Modal
       id={id}
@@ -44,7 +57,12 @@ export default function UsersPopup({ id, mode, user, onClose }) {
         </fieldset>
       }
       actions={
-        <button className="btn" onClick={save}>저장</button>
+        <>
+          {mode === 'U' && (
+            <button className="btn btn-secondary" onClick={del}>삭제</button>
+          )}
+          <button className="btn" onClick={save}>저장</button>
+        </>
       }
     />
   )

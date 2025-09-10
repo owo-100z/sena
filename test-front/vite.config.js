@@ -10,7 +10,7 @@ export default defineConfig({
       dirs: ['src/assets/common'],
       imports: [
         'react',
-        {dayjs: [['default', 'dayjs']]}
+        { '@/assets/common/dayjs-setup': [['default', 'dayjs']] },
       ],
       dts: 'src/auto-imports.d.ts',
     }),

@@ -2,6 +2,8 @@
 // const apiBaseUrl = '/api';
 const apiBaseUrl = 'http://localhost:3031/api';
 
+let loadingCnt = 0;
+
 export const comm = {
   log: (...args) => {
     const now = new Date();
@@ -33,7 +35,9 @@ export const comm = {
     if (headers) comm.log(`Request Headers: ${JSON.stringify(headers)}`);
 
     try {
-      document.getElementById("loading-overlay").classList.remove("hidden");
+      if (++loadingCnt > 0) {
+        document.getElementById("loading-overlay").classList.remove("hidden");
+      }
       const res = await fetch(fullUrl, {
         method,
         headers: {
@@ -50,7 +54,9 @@ export const comm = {
       comm.log(`API Error: ${e}`);
       return { status: 'error', error: e.message };
     } finally {
-      document.getElementById("loading-overlay").classList.add("hidden");
+      if (--loadingCnt === 0) {
+        document.getElementById("loading-overlay").classList.add("hidden");
+      }
     }
   },
 }
@@ -61,6 +67,7 @@ export const utils = {
     if (typeof obj === "object") {
       return Object.keys(obj).length === 0;
     }
+    if (obj.length === 0) return true;
     return false;
   },
   getToday: () => {

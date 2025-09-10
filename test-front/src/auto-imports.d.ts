@@ -8,7 +8,8 @@ export {}
 declare global {
   const comm: typeof import('./assets/common/common.js')['comm']
   const createRef: typeof import('react')['createRef']
-  const dayjs: typeof import('dayjs')['default']
+  const dayjs: typeof import('@/assets/common/dayjs-setup')['default']
+  const dayjsSetup: typeof import('./assets/common/dayjs-setup.js')['default']
   const forwardRef: typeof import('react')['forwardRef']
   const lazy: typeof import('react')['lazy']
   const memo: typeof import('react')['memo']

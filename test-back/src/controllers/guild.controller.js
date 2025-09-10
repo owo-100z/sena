@@ -51,6 +51,31 @@ router.post('/users', async (req, res) => {
     }
 });
 
+// 사용자 삭제
+router.delete('/users/:id', async (req, res) => {
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).json({
+            status: 'fail',
+            message: 'ID is required for deletion',
+        });
+    }
+    try {
+        await guildService.deleteUser(id);
+        res.status(200).json({
+            status: 'success',
+            message: 'User deleted successfully',
+        });
+    } catch (error) {
+        log(`Error deleting user siege score: ${error.message}`);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to delete user',
+            error: error.message,
+        });
+    }
+});
+
 // 공성전 점수 저장
 router.post('/siege', async (req, res) => {
     const { userId, stdDate, score, remarks } = req.body;
@@ -76,5 +101,32 @@ router.post('/siege', async (req, res) => {
         });
     }
 });
+
+// 공성전 기록
+router.get('/siege/summary', async (req, res) => {
+    const { stdDate } = req.query;
+    if (!stdDate) {
+        return res.status(400).json({
+            status: 'fail',
+            message: `required parameter is null [stdDate: ${stdDate}]`,
+        });
+    }
+    try {
+        const dashboard = await guildService.selectSiegeSummaryDashboard(stdDate);
+        const list = await guildService.selectSiegeSummaryList(stdDate);
+        
+        res.status(200).json({
+        status: 'success',
+        data: { dashboard, list },
+        });
+    } catch (error) {
+        log(`Error fetching user list: ${error.message}`);
+        res.status(500).json({
+        status: 'error',
+        message: 'Failed to fetch user list',
+        error: error.message,
+        });
+    }
+})
 
 module.exports = router;

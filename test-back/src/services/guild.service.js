@@ -39,6 +39,20 @@ class GuildService {
         }
     }
 
+    // 사용자 삭제
+    async deleteUser(id) {
+        if (!id) {
+            throw new Error('ID is required for deletion');
+        }
+        try {
+            await GuildRepository.deleteUser(id);
+            return { status: 'success', message: 'User deleted successfully' };
+        } catch (error) {
+            log(`Error in deleteUser: ${error.message}`);
+            throw new Error('Failed to delete user');
+        }
+    }
+
     // 공성전 점수 저장
     async saveSiege(user) {
         if (!user || !user.userId || !user.stdDate || !user.score) {
@@ -50,6 +64,28 @@ class GuildService {
         } catch (error) {
             log(`Error in saveSiege: ${error.message}`);
             throw new Error('Failed to save user siege record');
+        }
+    }
+
+    // 공성전 기록 대시보드 조회
+    async selectSiegeSummaryDashboard(stdDate) {
+        try {
+            const dashboard = await GuildRepository.selectSiegeSummaryDashboard(stdDate);
+            return dashboard;
+        } catch (error) {
+            log(`Error in selectSiegeSummaryDashboard: ${error.message}`);
+            throw new Error('Failed to fetch siege summary dashboard');
+        }
+    }
+
+    // 공성전 기록 리스트 조회
+    async selectSiegeSummaryList(stdDate) {
+        try {
+            const list = await GuildRepository.selectSiegeSummaryList(stdDate);
+            return list;
+        } catch (error) {
+            log(`Error in selectSiegeSummaryList: ${error.message}`);
+            throw new Error('Failed to fetch siege summary list');
         }
     }
 }

@@ -39,10 +39,9 @@ export default function Users() {
         <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-auto border p-4">
           <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {users.map((v, i) => (
-              <div className="tooltip" data-tip={v.remarks}>
+              <div className="tooltip" data-tip={v.remarks} key={i}>
                 <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-md xl:btn-md hover:bg-base-300 transition-all duration-200 hover:-translate-y-1 w-full justify-between"
                         onClick={() => showPopup("U", {...v})}
-                        key={i}
                 >
                   {v.username}
                   <div className="badge badge-sm">Lv {v.lv}</div>
