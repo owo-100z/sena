@@ -4,11 +4,11 @@ services:
     container_name: sena_db
     restart: always
     environment:
-      - TZ: Asia/Seoul
-      - MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}
-      - MARIADB_DATABASE: ${DB_NAME}
-      - MARIADB_USER: ${DB_USER}
-      - MARIADB_PASSWORD: ${DB_PASSWORD}
+      TZ: Asia/Seoul
+      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
     volumes:
       - ./db/db_data:/var/lib/mysql
       - ./db:/docker-entrypoint-initdb.d
