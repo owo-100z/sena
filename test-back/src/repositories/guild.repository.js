@@ -118,7 +118,8 @@ class GuildRepository {
                         , u.lv
                         , COALESCE(pre.score, 0) as pre_score
                         , COALESCE(s.score, 0) as cur_score
-                        , CASE WHEN COALESCE(s.score, 0) - COALESCE(pre.score, 0) = COALESCE(s.score, 0) THEN 0
+                        , CASE WHEN s.score IS NULL THEN 0
+                               WHEN COALESCE(s.score, 0) - COALESCE(pre.score, 0) = COALESCE(s.score, 0) THEN 0
                                ELSE COALESCE(s.score, 0) - COALESCE(pre.score, 0)
                            END AS diff_score
                         , (SELECT COUNT(1)
@@ -133,7 +134,7 @@ class GuildRepository {
                           AND u.id = s.user_id)
                      LEFT JOIN user_siege pre
                        ON (pre.std_date = DATE_FORMAT(DATE_ADD(DATE(?), INTERVAL -7 DAY), '%Y%m%d')
-                           AND s.user_id = pre.user_id)
+                           AND u.id = pre.user_id)
                     ORDER BY s.score DESC, u.username`;
     const rows = await conn.query(query, [std_dt, std_dt]);
 

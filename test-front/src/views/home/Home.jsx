@@ -80,7 +80,7 @@ export default function Home() {
           <thead>
             <tr>
               <th></th>
-              <td>유저명</td>
+              <th>유저명</th>
               <td>레벨</td>
               <td>지난주점수</td>
               <td>이번주점수</td>
@@ -92,7 +92,7 @@ export default function Home() {
             { summary.list && summary.list?.map((v, i) => (
               <tr key={i}>
                 <th>{i+1}</th>
-                <td>{v?.username}</td>
+                <th>{v?.username}</th>
                 <td>{v?.lv}</td>
                 <td>{Number(v?.pre_score || 0).toLocaleString()}</td>
                 <td>{Number(v?.cur_score || 0).toLocaleString()}</td>
