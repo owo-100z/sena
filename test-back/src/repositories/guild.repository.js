@@ -124,8 +124,8 @@ class GuildRepository {
                            END AS diff_score
                         , (SELECT COUNT(1)
                              FROM user_siege
-                            WHERE std_date BETWEEN DATE_FORMAT(DATE_SUB(NOW(), INTERVAL WEEKDAY(NOW()) DAY), '%Y%m%d')
-                                               AND DATE_FORMAT(DATE_ADD(DATE_SUB(DATE(NOW()), INTERVAL WEEKDAY(DATE(NOW())) DAY), INTERVAL 6 DAY), '%Y%m%d')
+                            WHERE std_date BETWEEN DATE_FORMAT(DATE_SUB(NOW(), INTERVAL WEEKDAY(NOW()) + 7 DAY), '%Y%m%d')
+                                               AND DATE_FORMAT(DATE_SUB(NOW(), INTERVAL WEEKDAY(NOW()) + 1 DAY), '%Y%m%d')
                               AND score = 0
                               AND user_id = u.id) AS no_play
                      FROM users u

@@ -85,7 +85,7 @@ export default function Home() {
               <td>지난주점수</td>
               <td>이번주점수</td>
               <td>점수상승</td>
-              <td>이번주미참여</td>
+              <td>지난주미참여</td>
             </tr>
           </thead>
           <tbody>
