@@ -135,7 +135,7 @@ class GuildRepository {
                      LEFT JOIN user_siege pre
                        ON (pre.std_date = DATE_FORMAT(DATE_ADD(DATE(?), INTERVAL -7 DAY), '%Y%m%d')
                            AND u.id = pre.user_id)
-                    ORDER BY s.score DESC, u.username`;
+                    ORDER BY s.score DESC, pre.score DESC, u.username`;
     const rows = await conn.query(query, [std_dt, std_dt]);
 
     const result = rows.map(row => ({
