@@ -150,7 +150,8 @@ class GuildRepository {
       pre_score: row.pre_score?.toString(),
       cur_score: row.cur_score?.toString(),
       diff_score: row.diff_score?.toString(),
-      no_play: row.no_play?.toString()
+      no_play_pre: row.no_play_pre?.toString(),
+      no_play_cur: row.no_play_cur?.toString()
     }));
 
     conn.release();
