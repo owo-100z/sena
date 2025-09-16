@@ -86,6 +86,7 @@ export default function Home() {
               <td>이번주점수</td>
               <td>점수상승</td>
               <td>지난주미참여</td>
+              <td>이번주미참여</td>
             </tr>
           </thead>
           <tbody>
@@ -97,7 +98,8 @@ export default function Home() {
                 <td>{Number(v?.pre_score || 0).toLocaleString()}</td>
                 <td>{Number(v?.cur_score || 0).toLocaleString()}</td>
                 <td className={(v?.diff_score || 0) < 0 ? 'text-error' : ''}>{Number(v?.diff_score || 0).toLocaleString()}</td>
-                <td className={(v?.no_play || 0) > 0 ? 'text-error' : ''}>{v?.no_play}</td>
+                <td className={(v?.no_play_pre || 0) > 0 ? 'text-error' : ''}>{v?.no_play_pre}</td>
+                <td className={(v?.no_play_cur || 0) > 0 ? 'text-error' : ''}>{v?.no_play_cur}</td>
               </tr>
             ))}
           </tbody>

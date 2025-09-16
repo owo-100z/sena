@@ -127,7 +127,13 @@ class GuildRepository {
                             WHERE std_date BETWEEN DATE_FORMAT(DATE_SUB(NOW(), INTERVAL WEEKDAY(NOW()) + 7 DAY), '%Y%m%d')
                                                AND DATE_FORMAT(DATE_SUB(NOW(), INTERVAL WEEKDAY(NOW()) + 1 DAY), '%Y%m%d')
                               AND score = 0
-                              AND user_id = u.id) AS no_play
+                              AND user_id = u.id) AS no_play_pre
+                        , (SELECT COUNT(1)
+                             FROM user_siege
+                            WHERE std_date BETWEEN DATE_FORMAT(DATE_SUB(NOW(), INTERVAL WEEKDAY(NOW()) DAY), '%Y%m%d')
+                                               AND DATE_FORMAT(DATE_SUB(NOW(), INTERVAL WEEKDAY(NOW()) - 6 DAY), '%Y%m%d')
+                              AND score = 0
+                              AND user_id = u.id) AS no_play_cur
                      FROM users u
                      LEFT JOIN user_siege s
                        ON (s.std_date = ?
