@@ -93,7 +93,9 @@ class GuildRepository {
                         , (SELECT COALESCE(SUM(COALESCE(score, 0)), 0)
                              FROM user_siege
                             WHERE std_date = DATE_FORMAT(DATE_ADD(DATE(?), INTERVAL -7 DAY), '%Y%m%d')) as pre_total_score
-                     FROM user_siege
+                     FROM users u
+                     JOIN user_siege s
+                       ON u.id = s.user_id
                     WHERE std_date = ?`;
     const rows = await conn.query(query, [std_dt, std_dt]);
 

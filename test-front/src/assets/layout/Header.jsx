@@ -13,6 +13,7 @@ export default function Header() {
             { title: '길드원', path: '/users' },
             // { title: '길드스펙', path: '/guild-spec' },
             { title: '점수입력', path: '/siege-record' },
+            { title: '점수입력(테이블)', path: '/siege-record-table' },
             // { title: '길드전', path: '/guild-war' },
         ]},
         // {title: '설정', menus: [
